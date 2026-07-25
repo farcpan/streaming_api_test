@@ -8,7 +8,7 @@
     "cdk": "cdk",
     "dif-dev-all": "cdk diff -c stage=dev --profile=dev",
     "dep-dev-all": "cdk deploy -c stage=dev --all --profile=dev --require-approval=never",
-    "destroy-dev-all": "cdk destroy -c stage=dev -all --profile=dev"
+    "destroy-dev-all": "cdk destroy -c stage=dev --all --profile=dev"
   },
   "devDependencies": {
     "@swc/core": "^1.15.0",
