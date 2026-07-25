@@ -5,6 +5,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType, Cors, EndpointType, LambdaIntegration, ResponseTransferMode, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { join } from 'path';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 interface SrcStackProps extends StackProps {
   context: ContextParameters
@@ -14,12 +15,22 @@ export class SrcStack extends Stack {
   constructor(scope: Construct, id: string, props: SrcStackProps) {
     super(scope, id, props);
 
+    // LogGroup
+    const logGroupForLambdaFn = new LogGroup(this, props.context.getResourceId("log-group"), {
+      logGroupName: props.context.getResourceId("log-group"),
+      retention: RetentionDays.ONE_DAY,
+    })
+
     // Lambda
     const streamFunction = new NodejsFunction(this, props.context.getResourceId("stream-api-fn"), {
       runtime: Runtime.NODEJS_22_X,
       entry: join(__dirname, "../lambdas/index.ts"),
       handler: "streamApiHandler",
-      timeout: Duration.minutes(2)
+      timeout: Duration.minutes(2),
+      logGroup: logGroupForLambdaFn,
+      bundling: {
+        target: "node22",
+      }
     });
 
     // API Gateway
